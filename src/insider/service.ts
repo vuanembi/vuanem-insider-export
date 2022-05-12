@@ -5,8 +5,6 @@ import * as repo from './repo';
 
 dayjs.extend(utc);
 
-const callbackURL = `${process.env.PUBLIC_URL}/download`;
-
 const buildConfig = (start: Dayjs, end: Dayjs) => ({
     vertical: {
         sources: ['last'],
@@ -229,7 +227,7 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
         ],
     },
     format: 'csv',
-    hook: callbackURL,
+    hook: `${process.env.PUBLIC_URL}/download`,
 });
 
 export const requestExportService = async (start?: string, end?: string) => {
