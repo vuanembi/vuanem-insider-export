@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ReadStream } from 'fs-extra';
 
 export type ExportConfig = {
     [key: string]: any;
@@ -11,4 +12,4 @@ export const requestExport = (data: ExportConfig) =>
         .catch((err): number => err.isAxiosError && err.response.status);
 
 export const streamExport = (url: string) =>
-    axios.get(url, { responseType: 'stream' });
+    axios.get<ReadStream>(url, { responseType: 'stream' });

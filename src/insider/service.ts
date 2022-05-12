@@ -1,7 +1,10 @@
+import stream from 'stream/promises';
+
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 import * as repo from './repo';
+import * as storage from '../storage/cloudStorage';
 
 dayjs.extend(utc);
 
@@ -246,4 +249,23 @@ export const requestExportService = async (start?: string, end?: string) => {
         .then((status) => ({ status }));
 };
 
+export const streamExportService = async (_url: string) => {
+    const filename = new URL(decodeURIComponent(_url)).pathname
+        ?.split('/')
+        .pop();
 
+    const streamFile = async (filename: string) => {
+        return repo
+            .streamExport(_url)
+            .then(({ data }) => data)
+            .then(async (data) => {
+                const writeStream = storage.createFile(filename).createWriteStream()
+                // const fileStream = data.pipe(writeStream);
+                await stream.pipeline(data, writeStream)
+            })
+            .then(() => filename)
+            .catch((err) => console.log(err));
+    };
+
+    return filename && streamFile(storage.createFileName(filename));
+};
