@@ -12,4 +12,6 @@ export const requestExport = (data: ExportConfig) =>
         .catch((err): number => err.isAxiosError && err.response.status);
 
 export const streamExport = (url: string) =>
-    axios.get<ReadStream>(url, { responseType: 'stream' });
+    axios
+        .get<ReadStream>(url, { responseType: 'stream' })
+        .then(({ data }) => data);

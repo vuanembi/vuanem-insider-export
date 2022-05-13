@@ -1,32 +1,27 @@
-import { BigQuery, TableSchema } from '@google-cloud/bigquery';
+import { BigQuery } from '@google-cloud/bigquery';
 import { File } from '@google-cloud/storage';
 
 type LoadOptions = {
     table: string;
-    schema: TableSchema;
-    partitionKey: string;
+    schema: any;
 };
 
 const dataset = 'IP_Insider';
 
 const client = new BigQuery();
 
-const load = ({ table, schema, partitionKey }: LoadOptions, uri: File) =>
+const loadStaging = ({ table, schema }: LoadOptions, uri: File) => {
+    const _table = `s_${table}`;
     client
         .dataset(dataset)
-        .table(table)
+        .table(_table)
         .load(uri, {
-            schema,
-            sourceFormat: 'CSV',
-            timePartitioning: {
-                field: partitionKey,
-                type: 'DAY',
+            schema: {
+                fields: schema,
             },
+            sourceFormat: 'CSV',
         })
-        .then(([job]) => job.status)
-        .catch((err) => {
-            console.log(err);
-            return;
-        });
+        .then(() => _table);
+};
 
-export default load;
+export default loadStaging;

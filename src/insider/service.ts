@@ -3,8 +3,10 @@ import stream from 'stream/promises';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
+import * as rawData from './resource/rawUserData';
 import * as repo from './repo';
 import * as storage from '../storage/cloudStorage';
+import loadStaging, * as bigquery from '../db/bigquery';
 
 dayjs.extend(utc);
 
@@ -38,11 +40,11 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
         wanted: [
             {
                 event_name: 'c2m',
-                params: ['c_url_pagelocation', 'pid'],
+                params: ['c_url_pagelocation', 'pid', 'timestamp'],
             },
             {
                 event_name: 'cart_cleared',
-                params: ['sid'],
+                params: ['sid', 'timestamp'],
             },
             {
                 event_name: 'cart_page_view',
@@ -60,11 +62,12 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'up',
                     'url',
                     'usp',
+                    'timestamp',
                 ],
             },
             {
                 event_name: 'cdndataz',
-                params: ['c_type'],
+                params: ['c_type', 'timestamp'],
             },
             {
                 event_name: 'confirmation_page_view',
@@ -82,27 +85,35 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'up',
                     'url',
                     'usp',
+                    'timestamp',
                 ],
             },
             {
                 event_name: 'geofence_trigger',
-                params: ['name', 'status'],
+                params: ['name', 'status', 'timestamp'],
             },
             {
                 event_name: 'homepage_view',
-                params: ['device_type', 'referrer', 'sid', 'source', 'url'],
+                params: [
+                    'device_type',
+                    'referrer',
+                    'sid',
+                    'source',
+                    'url',
+                    'timestamp',
+                ],
             },
             {
                 event_name: 'ins_address_fill',
-                params: ['na'],
+                params: ['na', 'timestamp'],
             },
             {
                 event_name: 'ins_call_button_click',
-                params: [],
+                params: ['timestamp'],
             },
             {
                 event_name: 'ins_full_name_fill',
-                params: ['na'],
+                params: ['na', 'timestamp'],
             },
             {
                 event_name: 'ins_lead_submitted',
@@ -111,19 +122,25 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'c_source_url',
                     'campaign_id',
                     'url',
+                    'timestamp',
                 ],
             },
             {
                 event_name: 'ins_mess_button_click',
-                params: [],
+                params: ['timestamp'],
             },
             {
                 event_name: 'ins_phone_number_fill',
-                params: ['na'],
+                params: ['na', 'timestamp'],
             },
             {
                 event_name: 'ins_voucher_page_visit',
-                params: ['c_ins_voucher_end_date', 'campaign_id', 'na'],
+                params: [
+                    'c_ins_voucher_end_date',
+                    'campaign_id',
+                    'na',
+                    'timestamp',
+                ],
             },
             {
                 event_name: 'item_added_to_cart',
@@ -137,6 +154,7 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'up',
                     'url',
                     'usp',
+                    'timestamp',
                 ],
             },
             {
@@ -151,15 +169,22 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'up',
                     'url',
                     'usp',
+                    'timestamp',
                 ],
             },
             {
                 event_name: 'journey_enter',
-                params: ['is_dry_run', 'journey_id', 'name', 'reason'],
+                params: [
+                    'is_dry_run',
+                    'journey_id',
+                    'name',
+                    'reason',
+                    'timestamp',
+                ],
             },
             {
                 event_name: 'journey_exited',
-                params: ['is_dry_run', 'journey_id', 'name'],
+                params: ['is_dry_run', 'journey_id', 'name', 'timestamp'],
             },
             {
                 event_name: 'journey_product_action',
@@ -168,11 +193,12 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'campaign_id',
                     'channel_code',
                     'journey_id',
+                    'timestamp',
                 ],
             },
             {
                 event_name: 'lead_collected',
-                params: ['campaign_id'],
+                params: ['campaign_id', 'timestamp'],
             },
             {
                 event_name: 'listing_page_view',
@@ -183,6 +209,7 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'source',
                     'ta',
                     'url',
+                    'timestamp',
                 ],
             },
             {
@@ -194,6 +221,7 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'sid',
                     'source',
                     'url',
+                    'timestamp',
                 ],
             },
             {
@@ -213,19 +241,25 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
                     'up',
                     'url',
                     'usp',
+                    'timestamp',
                 ],
             },
             {
                 event_name: 'product_page_view_detail',
-                params: ['c_landingpage_url', 'c_source_url', 'pid'],
+                params: [
+                    'c_landingpage_url',
+                    'c_source_url',
+                    'pid',
+                    'timestamp',
+                ],
             },
             {
                 event_name: 'web-visit',
-                params: ['pn'],
+                params: ['pn', 'timestamp'],
             },
             {
                 event_name: 'web_visit',
-                params: ['c_type'],
+                params: ['c_type', 'timestamp'],
             },
         ],
     },
@@ -249,23 +283,29 @@ export const requestExportService = async (start?: string, end?: string) => {
         .then((status) => ({ status }));
 };
 
+export const extractFileName = (_url: string) =>
+    new URL(decodeURIComponent(_url)).pathname?.split('/').pop();
+
 export const streamExportService = async (_url: string) => {
-    const filename = new URL(decodeURIComponent(_url)).pathname
-        ?.split('/')
-        .pop();
+    const filename = extractFileName(_url);
 
     const streamFile = async (filename: string) => {
         return repo
             .streamExport(_url)
-            .then(({ data }) => data)
             .then(async (data) => {
-                const writeStream = storage.createFile(filename).createWriteStream()
-                // const fileStream = data.pipe(writeStream);
-                await stream.pipeline(data, writeStream)
+                const file = storage.getFile(filename);
+                await stream.pipeline(data, file.createWriteStream());
+                return file.name;
             })
-            .then(() => filename)
             .catch((err) => console.log(err));
     };
 
     return filename && streamFile(storage.createFileName(filename));
 };
+
+export const loadService = async (uri: string) => {
+    const insertQuery = `
+    insert into`
+   loadStaging(rawData, storage.getFile(uri));
+
+}

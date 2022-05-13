@@ -7,4 +7,4 @@ const bucket = client.bucket('vuanem-insider');
 export const createFileName = (filename: string) =>
     `user-data-exports/${filename}`;
 
-export const createFile = (filename: string) => bucket.file(filename);
+export const getFile = (filename: string) => bucket.file(filename);
