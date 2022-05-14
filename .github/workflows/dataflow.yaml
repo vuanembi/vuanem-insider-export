@@ -1,0 +1,84 @@
+name: Deploy Flex Template
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+      - feat/dataflow
+  workflow_dispatch:
+
+concurrency: ${{ github.ref }}
+
+env:
+  PROJECT_ID: voltaic-country-280607
+  BUCKET: vuanem-insider
+
+jobs:
+  set-env:
+    runs-on: ubuntu-latest
+    outputs:
+      template: ${{ steps.set-template.outputs.template }}
+      metadata: ${{ steps.set-metadata.outputs.metadata }}
+    steps:
+      - if: github.ref_name == 'dev'
+        run: |
+          echo "TEMPLATE=vuanem-insider-export-dev" >> $GITHUB_ENV
+          echo "METADATA=metadata-dev.json" >> $GITHUB_ENV
+
+      - if: github.ref_name == 'master'
+        run: |
+          echo "TEMPLATE=vuanem-insider-export" >> $GITHUB_ENV
+          echo "METADATA=metadata.json" >> $GITHUB_ENV
+
+      - id: set-template
+        run: |
+          echo "::set-output name=template::${{ env.TEMPLATE }}"
+          echo "::set-output name=metadata::gs://${{ env.BUCKET }}/${{ env.METADATA }}"
+
+  build-template:
+    runs-on: ubuntu-latest
+    needs: set-env
+    outputs:
+      image: ${{ steps.set-template.outputs.template }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: echo "IMAGE=${{ env.PROJECT_ID }}/${{ needs.set-env.outputs.template }}:${{ github.sha }}" >> $GITHUB_ENV
+
+      - uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - uses: "google-github-actions/setup-gcloud@v0"
+
+      - run: |-
+          gcloud auth configure-docker
+          docker build -t gcr.io/${{ env.IMAGE }} dataflow/
+          docker push gcr.io/${{ env.IMAGE }}
+          echo "::set-output name=image::${{ env.IMAGE }}"
+
+  upload-metadata:
+    runs-on: ubuntu-latest
+    needs: set-env
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - uses: "google-github-actions/setup-gcloud@v0"
+
+      - run: gsutil cp metadata.json ${{ needs.set-env.outputs.metadata }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - build-template
+      - upload-metadata
+    steps:
+      - run: >-
+          gcloud dataflow flex-template build ${{ needs.set-env.outputs.metadata }} \
+            --image="${{ needs.set-env.outputs.template }}" \
+            --sdk-language="PYTHON" 
