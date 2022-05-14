@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - dev
-      - feat/dataflow
   workflow_dispatch:
 
 concurrency: ${{ github.ref }}
@@ -18,67 +17,58 @@ jobs:
   set-env:
     runs-on: ubuntu-latest
     outputs:
-      template: ${{ steps.set-template.outputs.template }}
-      metadata: ${{ steps.set-metadata.outputs.metadata }}
+      image: ${{ steps.set-vars.outputs.image }}
+      template: ${{ steps.set-vars.outputs.template }}
     steps:
       - if: github.ref_name == 'dev'
         run: |
           echo "TEMPLATE=vuanem-insider-export-dev" >> $GITHUB_ENV
-          echo "METADATA=metadata-dev.json" >> $GITHUB_ENV
 
       - if: github.ref_name == 'master'
         run: |
           echo "TEMPLATE=vuanem-insider-export" >> $GITHUB_ENV
-          echo "METADATA=metadata.json" >> $GITHUB_ENV
 
-      - id: set-template
+      - id: set-vars
         run: |
-          echo "::set-output name=template::${{ env.TEMPLATE }}"
-          echo "::set-output name=metadata::gs://${{ env.BUCKET }}/${{ env.METADATA }}"
+          echo "::set-output name=template::gs://${{ env.BUCKET }}/${{ env.TEMPLATE }}.json"
+          echo "::set-output name=image::gcr.io/${{ env.PROJECT_ID }}/${{ env.TEMPLATE }}:${{ github.sha }}"
+
 
   build-template:
     runs-on: ubuntu-latest
     needs: set-env
-    outputs:
-      image: ${{ steps.set-template.outputs.template }}
     steps:
       - uses: actions/checkout@v2
-
-      - run: echo "IMAGE=${{ env.PROJECT_ID }}/${{ needs.set-env.outputs.template }}:${{ github.sha }}" >> $GITHUB_ENV
 
       - uses: "google-github-actions/auth@v0"
         with:
           credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
       - uses: "google-github-actions/setup-gcloud@v0"
+
+      - run: gcloud config set builds/use_kaniko True
 
       - run: |-
           gcloud auth configure-docker
-          docker build -t gcr.io/${{ env.IMAGE }} dataflow/
-          docker push gcr.io/${{ env.IMAGE }}
-          echo "::set-output name=image::${{ env.IMAGE }}"
-
-  upload-metadata:
-    runs-on: ubuntu-latest
-    needs: set-env
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: "google-github-actions/auth@v0"
-        with:
-          credentials_json: "${{ secrets.GCP_SA_KEY }}"
-
-      - uses: "google-github-actions/setup-gcloud@v0"
-
-      - run: gsutil cp metadata.json ${{ needs.set-env.outputs.metadata }}
+          docker build -t ${{ needs.set-env.outputs.image }} dataflow/
+          docker push ${{ needs.set-env.outputs.image }}
 
   deploy:
     runs-on: ubuntu-latest
     needs:
+      - set-env
       - build-template
-      - upload-metadata
     steps:
+      - uses: actions/checkout@v2
+
+      - uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - uses: "google-github-actions/setup-gcloud@v0"
+      
       - run: >-
-          gcloud dataflow flex-template build ${{ needs.set-env.outputs.metadata }} \
-            --image="${{ needs.set-env.outputs.template }}" \
-            --sdk-language="PYTHON" 
+          gcloud dataflow flex-template build ${{ needs.set-env.outputs.template }} \
+            --image="${{ needs.set-env.outputs.image }}" \
+            --sdk-language="PYTHON" \
+            --metadata-file="dataflow/metadata.json"
