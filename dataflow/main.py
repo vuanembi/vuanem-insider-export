@@ -1,17 +1,16 @@
 from typing import Optional
 import argparse
-import os
 import csv
-import json
 import logging
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.options.pipeline_options import SetupOptions
 
-os.environ[
-    "GOOGLE_APPLICATION_CREDENTIALS"
-] = "dataflow/voltaic-country-280607-ea3eb5348029.json"
+TEMP_LOCATION = "gs://vuanem-insider/temp"
+
+DATASET = "IP_Insider"
+
+TABLE = "p_UserDataExport"
 
 SCHEMA = [
     {"name": "a_mob_user_id", "type": "STRING"},
@@ -131,49 +130,40 @@ def transform_timestamp(element):
     }
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--input",
-        default="gs://vuanem-insider/user-data-exports2/2022-05-13T04:35:33.405013445Z.csv",
-    )
-    parser.add_argument(
-        "--output",
-        # default="gs://vuanem-insider/user-data-exports2/123.json",
-        default="123.json",
-    )
-    args = parser.parse_args()
-
+def main(input_: str):
     options = PipelineOptions(
         runner="DataFlowRunner",
         temp_location="gs://vuanem-insider/temp",
         project="voltaic-country-280607",
         region="us-central1",
+        save_main_session=True,
     )
-    options.view_as(SetupOptions).save_main_session = True
 
     with beam.Pipeline(options=options) as p:
         (
             p
-            | "ReadCSV" >> beam.io.ReadFromText(args.input, skip_header_lines=1)
+            | "ReadCSV" >> beam.io.ReadFromText(input_, skip_header_lines=1)
             | "ToDicts" >> beam.Map(parse_line)
             | "CleanNulls" >> beam.Map(clean_nulls)
             | "TransformTimestamp" >> beam.Map(transform_timestamp)
             | "WriteToBigQuery"
             >> beam.io.WriteToBigQuery(
-                "p_UserDataExport",
-                "IP_Insider",
+                TABLE,
+                DATASET,
                 schema={"fields": SCHEMA},
                 additional_bq_parameters={
                     "timePartitioning": {"field": "e_timestamp", "type": "DAY"},
                 },
             )
-            # | "Dumps" >> beam.Map(json.dumps)
-            # | "Write" >> beam.io.WriteToText(args.output, num_shards=1)
         )
 
 
 if __name__ == "__main__":
-    import os
+    logging.getLogger().setLevel(logging.INFO)
 
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=str)
+
+    args = parser.parse_args()
+
+    main(args.input)

@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--input",
+                "gs://vuanem-insider/user-data-exports2/2022-05-13T04:35:33.405013445Z.csv"
+            ]
+        }
+    ]
+}
