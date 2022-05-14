@@ -6,11 +6,11 @@ authors = ["HM <hieumdd@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "~3.9"
-apache-beam = {extras = ["gcp"], version = "^2.38.0"}
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
 mypy = "^0.950"
+apache-beam = {extras = ["gcp"], version = "^2.38.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

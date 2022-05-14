@@ -5,8 +5,7 @@ import logging
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-
-TEMP_LOCATION = "gs://vuanem-insider/temp"
+from google.auth import default
 
 DATASET = "IP_Insider"
 
@@ -110,6 +109,14 @@ SCHEMA = [
     {"name": "iid", "type": "STRING"},
 ]
 
+OPTIONS = PipelineOptions(
+    runner="DataFlowRunner",
+    temp_location="gs://vuanem-insider/temp",
+    project=default()[1],
+    region="us-central1",
+    save_main_session=True,
+)
+
 
 def parse_line(element):
     reader = csv.DictReader([element], fieldnames=[i["name"] for i in SCHEMA])
@@ -131,15 +138,7 @@ def transform_timestamp(element):
 
 
 def main(input_: str):
-    options = PipelineOptions(
-        runner="DataFlowRunner",
-        temp_location="gs://vuanem-insider/temp",
-        project="voltaic-country-280607",
-        region="us-central1",
-        save_main_session=True,
-    )
-
-    with beam.Pipeline(options=options) as p:
+    with beam.Pipeline(options=OPTIONS) as p:
         (
             p
             | "ReadCSV" >> beam.io.ReadFromText(input_, skip_header_lines=1)
