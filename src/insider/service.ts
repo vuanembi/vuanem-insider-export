@@ -1,14 +1,16 @@
-import stream from 'stream/promises';
-
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { v4 as uuidv4 } from 'uuid';
 
-import * as rawData from './resource/rawUserData';
 import * as repo from './repo';
-import * as storage from '../storage/cloudStorage';
-import loadStaging, * as bigquery from '../db/bigquery';
+import { launchJob } from '../dataflow';
+import { extractFileName } from '../utils';
 
 dayjs.extend(utc);
+
+const callbackHook = `${process.env.PUBLIC_URL}/callback`;
+
+export const template = process.env.TEMPLATE || '';
 
 const buildConfig = (start: Dayjs, end: Dayjs) => ({
     vertical: {
@@ -264,14 +266,14 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
         ],
     },
     format: 'csv',
-    hook: `${process.env.PUBLIC_URL}/download`,
+    hook: callbackHook,
 });
 
-export const requestExportService = async (start?: string, end?: string) => {
+export const requestExport = async (start?: string, end?: string) => {
     const [_start, _end] = (
         [
             [1, start],
-            [2, end],
+            [7, end],
         ] as [number, string?][]
     ).map(
         ([days, input_]) =>
@@ -283,29 +285,7 @@ export const requestExportService = async (start?: string, end?: string) => {
         .then((status) => ({ status }));
 };
 
-export const extractFileName = (_url: string) =>
-    new URL(decodeURIComponent(_url)).pathname?.split('/').pop();
-
-export const streamExportService = async (_url: string) => {
-    const filename = extractFileName(_url);
-
-    const streamFile = async (filename: string) => {
-        return repo
-            .streamExport(_url)
-            .then(async (data) => {
-                const file = storage.getFile(filename);
-                await stream.pipeline(data, file.createWriteStream());
-                return file.name;
-            })
-            .catch((err) => console.log(err));
-    };
-
-    return filename && streamFile(storage.createFileName(filename));
-};
-
-export const loadService = async (uri: string) => {
-    const insertQuery = `
-    insert into`
-   loadStaging(rawData, storage.getFile(uri));
-
-}
+export const exportPipeline = (url: string) =>
+    launchJob(template, extractFileName(url) || uuidv4(), { input: url }).then(
+        (id) => ({ id }),
+    );
