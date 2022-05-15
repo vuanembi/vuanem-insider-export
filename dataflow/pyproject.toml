@@ -8,6 +8,7 @@ authors = ["HM <hieumdd@gmail.com>"]
 python = "~3.9"
 
 [tool.poetry.dev-dependencies]
+requests = "^2.27.1"
 black = "^22.3.0"
 mypy = "^0.950"
 apache-beam = {extras = ["gcp"], version = "^2.38.0"}

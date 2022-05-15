@@ -2,10 +2,17 @@ from typing import Optional
 import argparse
 import csv
 import logging
+from urllib import parse
+import shutil
+
+import requests
 
 import apache_beam as beam
+from apache_beam.io.gcp.gcsio import GcsIO
 from apache_beam.options.pipeline_options import PipelineOptions
 from google.auth import default
+
+BUCKET = "vuanem-insider"
 
 DATASET = "IP_Insider"
 
@@ -118,9 +125,21 @@ OPTIONS = PipelineOptions(
 )
 
 
+def get_file_uri(input_: str) -> str:
+    name = parse.urlparse(input_).path.split("/").pop()
+    return f"gs://{BUCKET}/use/{name}"
+
+
+def stream_file(input_: str):
+    filename = get_file_uri(input_)
+    with requests.get(input_, stream=True) as r, GcsIO().open(filename, "wb") as f:
+        shutil.copyfileobj(r.raw, f)
+    return [filename]
+
+
 def parse_line(element):
-    reader = csv.DictReader([element], fieldnames=[i["name"] for i in SCHEMA])
-    return list(reader)[0]
+    cr = csv.DictReader([element], fieldnames=[i["name"] for i in SCHEMA])
+    return list(cr).pop()
 
 
 def clean_nulls(element):
@@ -141,7 +160,9 @@ def main(input_: str):
     with beam.Pipeline(options=OPTIONS) as p:
         (
             p
-            | "ReadCSV" >> beam.io.ReadFromText(input_, skip_header_lines=1)
+            | "InitializeURL" >> beam.Create([input_])
+            | "StreamFile" >> beam.ParDo(stream_file)
+            | "ReadFile" >> beam.io.ReadAllFromText(skip_header_lines=1)
             | "ToDicts" >> beam.Map(parse_line)
             | "CleanNulls" >> beam.Map(clean_nulls)
             | "TransformTimestamp" >> beam.Map(transform_timestamp)
