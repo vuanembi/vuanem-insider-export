@@ -10,8 +10,17 @@
             "justMyCode": true,
             "args": [
                 "--input",
-                "gs://vuanem-insider/user-data-exports2/2022-05-13T04:35:33.405013445Z.csv"
-            ]
+                "${input:input}"
+            ],
+
         }
-    ]
+    ],
+    "inputs": [
+        {
+          "id": "input",
+          "type": "promptString",
+          "description": "Input"
+          // type specific configuration attributes
+        }
+      ]
 }
