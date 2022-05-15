@@ -1,0 +1,74 @@
+name: Deploy Flex Template
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+
+concurrency: ${{ github.ref }}
+
+env:
+  PROJECT_ID: voltaic-country-280607
+  BUCKET: vuanem-insider
+
+jobs:
+  set-env:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.set-vars.outputs.image }}
+      template: ${{ steps.set-vars.outputs.template }}
+    steps:
+      - if: github.ref_name == 'dev'
+        run: |
+          echo "TEMPLATE=vuanem-insider-export-dev" >> $GITHUB_ENV
+
+      - if: github.ref_name == 'master'
+        run: |
+          echo "TEMPLATE=vuanem-insider-export" >> $GITHUB_ENV
+
+      - id: set-vars
+        run: |
+          echo "::set-output name=template::gs://${{ env.BUCKET }}/${{ env.TEMPLATE }}.json"
+          echo "::set-output name=image::gcr.io/${{ env.PROJECT_ID }}/${{ env.TEMPLATE }}:${{ github.sha }}"
+
+
+  build-template:
+    runs-on: ubuntu-latest
+    needs: set-env
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - uses: "google-github-actions/setup-gcloud@v0"
+
+      - run: gcloud config set builds/use_kaniko True
+
+      - run: |-
+          gcloud auth configure-docker
+          docker build -t ${{ needs.set-env.outputs.image }} dataflow/
+          docker push ${{ needs.set-env.outputs.image }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - set-env
+      - build-template
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - uses: "google-github-actions/setup-gcloud@v0"
+      
+      - run: >-
+          gcloud dataflow flex-template build ${{ needs.set-env.outputs.template }} \
+            --image="${{ needs.set-env.outputs.image }}" \
+            --sdk-language="PYTHON" \
+            --metadata-file="dataflow/metadata.json"
