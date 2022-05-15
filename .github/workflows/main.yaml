@@ -1,4 +1,4 @@
-name: Deploy Flex Template
+name: CI/CD
 
 on:
   push:
