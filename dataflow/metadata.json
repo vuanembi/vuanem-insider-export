@@ -1,0 +1,10 @@
+{
+    "name": "Vuanem Insider User Data Export Template",
+    "parameters": [
+        {
+            "name": "input",
+            "label": "Input GCS file",
+            "helpText": "Path to Input GCS file"
+        }
+    ]
+}
