@@ -12,6 +12,7 @@ concurrency: ${{ github.ref }}
 env:
   PROJECT_ID: voltaic-country-280607
   BUCKET: vuanem-insider
+  ENV_FILE: env.yaml
 
 jobs:
   set-env:
@@ -46,9 +47,8 @@ jobs:
 
       - uses: "google-github-actions/setup-gcloud@v0"
 
-      - run: gcloud config set builds/use_kaniko True
-
-      - run: |-
+      - name: Build & Push Image
+        run: |-
           gcloud auth configure-docker
           docker build -t ${{ needs.set-env.outputs.image }} dataflow/
           docker push ${{ needs.set-env.outputs.image }}
@@ -72,4 +72,49 @@ jobs:
             --image="${{ needs.set-env.outputs.image }}" \
             --sdk-language="PYTHON" \
             --metadata-file="dataflow/metadata.json"
+
+  deploy-function:
+    runs-on: ubuntu-latest
+    needs: set-env
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: |
+          echo "INSIDER_API_KEY: ${{ secrets.INSIDER_API_KEY }}" >> ${{ env.ENV_FILE }}
+
+          echo "TEMPLATE: ${{ needs.set-env.outputs.template }}" >> ${{ env.ENV_FILE }}
+
+          echo "PUBLIC_URL: https://us-central1-${{ env.PROJECT_ID }}.cloudfunctions.net/${{ needs.set-env.outputs.template }}" >> ${{ env.ENV_FILE }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "npm"
+
+      - run: npm install
+
+      - run: tsc --sourceMap false
+
+      - run: |
+          cp package.json dist/package.json
+          cp package-lock.json dist/package-lock.json
+
+      - uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      - uses: "google-github-actions/setup-gcloud@v0"
+
+      - run: >-
+          gcloud functions deploy ${{ needs.set-env.outputs.template }}
+          --entry-point=main
+          --source=dist
+          --region=us-central1
+          --timeout=530
+          --memory=2048MB
+          --runtime=nodejs16
+          --trigger-http
+          --no-user-output-enabled
+          --service-account=${{ env.GCP_SA }}
+          --env-vars-file=${{ env.ENV_FILE }}
   
