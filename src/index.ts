@@ -4,7 +4,7 @@ import {
     requestExport,
     exportPipeline,
     callbackRoute,
-} from '../src/insider/service';
+} from './insider/service';
 
 export const main: HttpFunction = (req, res) => {
     const { path, body } = req;
