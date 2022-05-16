@@ -116,14 +116,6 @@ SCHEMA = [
     {"name": "iid", "type": "STRING"},
 ]
 
-OPTIONS = PipelineOptions(
-    runner="DataFlowRunner",
-    temp_location="gs://vuanem-insider/temp",
-    project=default()[1],
-    region="us-central1",
-    save_main_session=True,
-)
-
 
 def get_file_uri(input_: str) -> str:
     name = parse.urlparse(input_).path.split("/").pop()
@@ -156,11 +148,19 @@ def transform_timestamp(element):
     }
 
 
-def main(input_: str):
-    with beam.Pipeline(options=OPTIONS) as p:
+def main(args: argparse.Namespace, beam_args: list[str]):
+    options = PipelineOptions(
+        beam_args,
+        runner=args.runner,
+        project=args.project,
+        temp_location=args.temp_location,
+        region=args.region,
+        save_main_session=True,
+    )
+    with beam.Pipeline(options=options) as p:
         (
             p
-            | "InitializeURL" >> beam.Create([input_])
+            | "InitializeURL" >> beam.Create([args.input])
             | "StreamFile" >> beam.ParDo(stream_file)
             | "ReadFile" >> beam.io.ReadAllFromText(skip_header_lines=1)
             | "ToDicts" >> beam.Map(parse_line)
@@ -182,8 +182,13 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser()
+
     parser.add_argument("--input", type=str)
+    parser.add_argument("--runner", type=str, default="DataFlowRunner")
+    parser.add_argument("--project", type=str, default=default()[1])
+    parser.add_argument("--temp_location", type=str, default="gs://vuanem-insider/temp")
+    parser.add_argument("--region", type=str, default="us-central1")
 
-    args = parser.parse_args()
+    args, beam_args = parser.parse_known_args()
 
-    main(args.input)
+    main(args, beam_args)
