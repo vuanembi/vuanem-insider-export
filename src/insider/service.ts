@@ -8,7 +8,8 @@ import { extractFileName } from '../utils';
 
 dayjs.extend(utc);
 
-const callbackHook = `${process.env.PUBLIC_URL}/callback`;
+export const callbackRoute = 'callback'
+const callbackHook = `${process.env.PUBLIC_URL}/${callbackRoute}`;
 
 export const template = process.env.TEMPLATE || '';
 
@@ -286,6 +287,6 @@ export const requestExport = async (start?: string, end?: string) => {
 };
 
 export const exportPipeline = (url: string) =>
-    launchJob(template, extractFileName(url) || uuidv4(), { input: url }).then(
-        (id) => ({ id }),
-    );
+    launchJob(template, { input: url }, 'insider-export').then((id) => ({
+        id,
+    }));

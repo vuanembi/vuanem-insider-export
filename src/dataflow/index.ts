@@ -5,8 +5,8 @@ const client = new FlexTemplatesServiceClient();
 
 export const launchJob = async (
     containerSpecGcsPath: string,
-    jobName: string,
     parameters: Record<string, any>,
+    jobName?: string,
 ) => {
     const projectId = await client.getProjectId();
     const location = 'us-central1';
