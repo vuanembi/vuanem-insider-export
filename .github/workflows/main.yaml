@@ -1,0 +1,39 @@
+name: Set Env
+
+on:
+  workflow_call:
+    outputs:
+      fn:
+        value: ${{ jobs.set-env.outputs.fn }}
+      template:
+        value: ${{ jobs.set-env.outputs.template }}
+      image:
+        value: ${{ jobs.set-env.outputs.image }}
+
+env:
+  SERVICE: vuanem-insider-export
+  
+  PROJECT_ID: voltaic-country-280607
+  BUCKET: vuanem-insider
+
+jobs:
+  set-env:
+    runs-on: ubuntu-latest
+    outputs:
+      fn: ${{ steps.set-vars.outputs.fn }}
+      template: ${{ steps.set-vars.outputs.template }}
+      image: ${{ steps.set-vars.outputs.image }}
+    steps:
+      - if: github.ref_name == 'dev'
+        run: |
+          echo "FN=${{ env.SERVICE }}-${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - if: github.ref_name == 'master'
+        run: |
+          echo "FN=${{ env.SERVICE }}" >> $GITHUB_ENV
+
+      - id: set-vars
+        run: |
+          echo "::set-output name=fn::${{ env.FN }}"
+          echo "::set-output name=template::gs://${{ env.BUCKET }}/${{ env.FN }}.json"
+          echo "::set-output name=image::gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.ref_name }}"
