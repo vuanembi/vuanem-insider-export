@@ -2,7 +2,7 @@
 name = "apache-beam"
 version = "2.38.0"
 description = "Apache Beam SDK for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -80,7 +80,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 name = "cachetools"
 version = "4.2.4"
 description = "Extensible memoizing collections and decorators"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "~=3.5"
 
@@ -88,7 +88,7 @@ python-versions = "~=3.5"
 name = "certifi"
 version = "2021.10.8"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -96,7 +96,7 @@ python-versions = "*"
 name = "charset-normalizer"
 version = "2.0.12"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5.0"
 
@@ -118,7 +118,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 name = "cloudpickle"
 version = "2.0.0"
 description = "Extended pickling support for Python objects"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -134,7 +134,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "crcmod"
 version = "1.7"
 description = "CRC Generator"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -142,7 +142,7 @@ python-versions = "*"
 name = "dill"
 version = "0.3.1.1"
 description = "serialize all of python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*"
 
@@ -153,7 +153,7 @@ graph = ["objgraph (>=1.7.2)"]
 name = "docopt"
 version = "0.6.2"
 description = "Pythonic argument parser, that will make you smile"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -161,7 +161,7 @@ python-versions = "*"
 name = "fastavro"
 version = "1.4.11"
 description = "Fast read/write of AVRO files"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -175,7 +175,7 @@ zstandard = ["zstandard"]
 name = "fasteners"
 version = "0.17.3"
 description = "A python package that provides useful locks"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -183,7 +183,7 @@ python-versions = ">=3.6"
 name = "google-api-core"
 version = "1.31.5"
 description = "Google API client core library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 
@@ -207,7 +207,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
 name = "google-apitools"
 version = "0.5.31"
 description = "client libraries for humans"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -225,7 +225,7 @@ testing = ["mock (>=1.0.1)"]
 name = "google-auth"
 version = "1.35.0"
 description = "Google Authentication Library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 
@@ -244,7 +244,7 @@ reauth = ["pyu2f (>=0.1.5)"]
 name = "google-cloud-bigquery"
 version = "2.34.3"
 description = "Google BigQuery API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6, <3.11"
 
@@ -273,7 +273,7 @@ tqdm = ["tqdm (>=4.7.4,<5.0.0dev)"]
 name = "google-cloud-bigquery-storage"
 version = "2.13.1"
 description = "BigQuery Storage API API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -291,7 +291,7 @@ tests = ["freezegun"]
 name = "google-cloud-bigtable"
 version = "1.7.1"
 description = "Google Cloud Bigtable API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -304,7 +304,7 @@ grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
 name = "google-cloud-core"
 version = "1.7.2"
 description = "Google Cloud API client core library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 
@@ -320,7 +320,7 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 name = "google-cloud-datastore"
 version = "1.15.4"
 description = "Google Cloud Datastore API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -332,7 +332,7 @@ google-cloud-core = ">=1.4.0,<3.0dev"
 name = "google-cloud-dlp"
 version = "3.6.2"
 description = "Cloud Data Loss Prevention (DLP) API API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -348,7 +348,7 @@ libcst = ["libcst (>=0.2.5)"]
 name = "google-cloud-language"
 version = "1.3.1"
 description = "Google Cloud Natural Language API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -359,7 +359,7 @@ google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["g
 name = "google-cloud-pubsub"
 version = "2.12.1"
 description = "Google Cloud Pub/Sub API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -377,7 +377,7 @@ libcst = ["libcst (>=0.3.10)"]
 name = "google-cloud-pubsublite"
 version = "1.4.2"
 description = ""
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -391,7 +391,7 @@ overrides = ">=6.0.1,<7.0.0"
 name = "google-cloud-recommendations-ai"
 version = "0.2.0"
 description = ""
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -403,7 +403,7 @@ proto-plus = ">=1.15.0"
 name = "google-cloud-spanner"
 version = "1.19.2"
 description = "Cloud Spanner API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -419,7 +419,7 @@ tracing = ["opentelemetry-api (==0.11b0)", "opentelemetry-sdk (==0.11b0)", "open
 name = "google-cloud-videointelligence"
 version = "1.16.2"
 description = "Google Cloud Video Intelligence API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -430,7 +430,7 @@ google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["g
 name = "google-cloud-vision"
 version = "1.0.1"
 description = "Cloud Vision API API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
@@ -441,7 +441,7 @@ google-api-core = {version = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev", extras = ["g
 name = "google-crc32c"
 version = "1.3.0"
 description = "A python wrapper of the C library 'Google CRC32C'"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -452,7 +452,7 @@ testing = ["pytest"]
 name = "google-resumable-media"
 version = "2.3.2"
 description = "Utilities for Google Media Downloads and Resumable Uploads"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">= 3.6"
 
@@ -467,7 +467,7 @@ requests = ["requests (>=2.18.0,<3.0.0dev)"]
 name = "googleapis-common-protos"
 version = "1.56.1"
 description = "Common protobufs used in Google APIs"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -482,7 +482,7 @@ grpc = ["grpcio (>=1.0.0)"]
 name = "grpc-google-iam-v1"
 version = "0.12.4"
 description = "IAM API client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -494,7 +494,7 @@ grpcio = ">=1.0.0,<2.0.0dev"
 name = "grpcio"
 version = "1.46.1"
 description = "HTTP/2-based RPC framework"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -508,7 +508,7 @@ protobuf = ["grpcio-tools (>=1.46.1)"]
 name = "grpcio-gcp"
 version = "0.2.2"
 description = "gRPC extensions for Google Cloud Platform"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -519,7 +519,7 @@ grpcio = ">=1.12.0"
 name = "grpcio-status"
 version = "1.46.1"
 description = "Status proto mapping for gRPC"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -532,7 +532,7 @@ protobuf = ">=3.12.0"
 name = "hdfs"
 version = "2.7.0"
 description = "HdfsCLI: API and command line interface for HDFS."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -550,7 +550,7 @@ kerberos = ["requests-kerberos (>=0.7.0)"]
 name = "httplib2"
 version = "0.19.1"
 description = "A comprehensive HTTP client library."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -561,7 +561,7 @@ pyparsing = ">=2.4.2,<3"
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -595,7 +595,7 @@ python-versions = "*"
 name = "numpy"
 version = "1.22.3"
 description = "NumPy is the fundamental package for array computing with Python."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -603,7 +603,7 @@ python-versions = ">=3.8"
 name = "oauth2client"
 version = "4.1.3"
 description = "OAuth 2.0 client library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -618,7 +618,7 @@ six = ">=1.6.1"
 name = "orjson"
 version = "3.6.8"
 description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -626,7 +626,7 @@ python-versions = ">=3.7"
 name = "overrides"
 version = "6.1.0"
 description = "A decorator to automatically detect mismatch when overriding a method."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -637,7 +637,7 @@ typing-utils = ">=0.0.3"
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -668,7 +668,7 @@ test = ["appdirs (==1.4.4)", "pytest-cov (>=2.7)", "pytest-mock (>=3.6)", "pytes
 name = "proto-plus"
 version = "1.20.3"
 description = "Beautiful, Pythonic protocol buffers."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -682,7 +682,7 @@ testing = ["google-api-core[grpc] (>=1.22.2)"]
 name = "protobuf"
 version = "3.20.1"
 description = "Protocol Buffers"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -690,7 +690,7 @@ python-versions = ">=3.7"
 name = "pyarrow"
 version = "6.0.1"
 description = "Python library for Apache Arrow"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -701,7 +701,7 @@ numpy = ">=1.16.6"
 name = "pyasn1"
 version = "0.4.8"
 description = "ASN.1 types and codecs"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -709,7 +709,7 @@ python-versions = "*"
 name = "pyasn1-modules"
 version = "0.2.8"
 description = "A collection of ASN.1-based protocols modules."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -720,7 +720,7 @@ pyasn1 = ">=0.4.6,<0.5.0"
 name = "pydot"
 version = "1.4.2"
 description = "Python interface to Graphviz's Dot"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -731,7 +731,7 @@ pyparsing = ">=2.1.4"
 name = "pymongo"
 version = "3.12.3"
 description = "Python driver for MongoDB <http://www.mongodb.org>"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -749,7 +749,7 @@ zstd = ["zstandard"]
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -757,7 +757,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
@@ -768,7 +768,7 @@ six = ">=1.5"
 name = "pytz"
 version = "2022.1"
 description = "World timezone definitions, modern and historical"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -776,7 +776,7 @@ python-versions = "*"
 name = "requests"
 version = "2.27.1"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
@@ -794,7 +794,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 name = "rsa"
 version = "4.8"
 description = "Pure-Python RSA implementation"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6,<4"
 
@@ -805,7 +805,7 @@ pyasn1 = ">=0.1.3"
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -821,7 +821,7 @@ python-versions = ">=3.7"
 name = "typing-extensions"
 version = "4.2.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -829,7 +829,7 @@ python-versions = ">=3.7"
 name = "typing-utils"
 version = "0.1.0"
 description = "utils to inspect Python type annotations"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6.1"
 
@@ -840,7 +840,7 @@ test = ["pytest"]
 name = "urllib3"
 version = "1.26.9"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
@@ -852,7 +852,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9"
-content-hash = "1d173af1ce68b2d07d9b56f29f379d1801ec098acfd87e6b86599df5f3af04d1"
+content-hash = "75881f966b4aad85cefbf24d28155f561b4619d1deb97501804bd7a91a03edb2"
 
 [metadata.files]
 apache-beam = [
