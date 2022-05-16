@@ -119,7 +119,7 @@ SCHEMA = [
 
 def get_file_uri(input_: str) -> str:
     name = parse.urlparse(input_).path.split("/").pop()
-    return f"gs://{BUCKET}/use/{name}"
+    return f"gs://{BUCKET}/user-data-exports/{name}"
 
 
 def stream_file(input_: str):
@@ -129,13 +129,13 @@ def stream_file(input_: str):
     return [filename]
 
 
-def parse_line(element):
-    cr = csv.DictReader([element], fieldnames=[i["name"] for i in SCHEMA])
-    return list(cr).pop()
+# def parse_line(element):
+#     cr = csv.DictReader([element], fieldnames=[i["name"] for i in SCHEMA])
+#     return list(cr).pop()
 
 
-def clean_nulls(element):
-    return {k: v if v != "\\N" else None for k, v in element.items()}
+# def clean_nulls(element):
+#     return {k: v if v != "\\N" else None for k, v in element.items()}
 
 
 def transform_timestamp(element):
@@ -144,7 +144,10 @@ def transform_timestamp(element):
 
     return {
         **element,
-        **{k: _parse(element[k]) for k in [i["name"] for i in SCHEMA]},
+        **{
+            k: _parse(element[k])
+            for k in [i["name"] for i in SCHEMA if i["type"] == "TIMESTAMP"]
+        },
     }
 
 
@@ -162,9 +165,9 @@ def main(args: argparse.Namespace, beam_args: list[str]):
             p
             | "InitializeURL" >> beam.Create([args.input])
             | "StreamFile" >> beam.ParDo(stream_file)
-            | "ReadFile" >> beam.io.ReadAllFromText(skip_header_lines=1)
-            | "ToDicts" >> beam.Map(parse_line)
-            | "CleanNulls" >> beam.Map(clean_nulls)
+            | "ReadFile" >> beam.io.ReadAllFromParquet()
+            # | "ToDicts" >> beam.Map(parse_line)
+            # | "CleanNulls" >> beam.Map(clean_nulls)
             | "TransformTimestamp" >> beam.Map(transform_timestamp)
             | "WriteToBigQuery"
             >> beam.io.WriteToBigQuery(
