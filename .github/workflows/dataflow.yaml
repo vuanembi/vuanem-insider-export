@@ -7,36 +7,14 @@ on:
       - dev
     paths:
       - dataflow/**
+      - .github/workflows/dataflow.yaml
   workflow_dispatch:
 
 concurrency: ${{ github.ref }}
 
-env:
-  PROJECT_ID: voltaic-country-280607
-  BUCKET: vuanem-insider
-  ENV_FILE: env.yaml
-
 jobs:
   set-env:
-    runs-on: ubuntu-latest
-    outputs:
-      service: ${{ steps.set-vars.outputs.service }}
-      template: ${{ steps.set-vars.outputs.template }}
-      image: ${{ steps.set-vars.outputs.image }}
-    steps:
-      - if: github.ref_name == 'dev'
-        run: |
-          echo "SERVICE=vuanem-insider-export-dev" >> $GITHUB_ENV
-
-      - if: github.ref_name == 'master'
-        run: |
-          echo "SERVICE=vuanem-insider-export" >> $GITHUB_ENV
-
-      - id: set-vars
-        run: |
-          echo "::set-output name=service::${{ env.SERVICE }}"
-          echo "::set-output name=template::gs://${{ env.BUCKET }}/${{ env.SERVICE }}.json"
-          echo "::set-output name=image::gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+    uses: ./.github/workflows/main.yaml
 
 
   build-template:

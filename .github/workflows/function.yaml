@@ -13,25 +13,12 @@ concurrency: ${{ github.ref }}
 
 env:
   PROJECT_ID: voltaic-country-280607
+  GCP_SA: bivuanem@voltaic-country-280607.iam.gserviceaccount.com
   ENV_FILE: env.yaml
 
 jobs:
   set-env:
-    runs-on: ubuntu-latest
-    outputs:
-      service: ${{ steps.set-vars.outputs.service }}
-    steps:
-      - if: github.ref_name == 'dev'
-        run: |
-          echo "SERVICE=vuanem-insider-export-dev" >> $GITHUB_ENV
-
-      - if: github.ref_name == 'master'
-        run: |
-          echo "SERVICE=vuanem-insider-export" >> $GITHUB_ENV
-
-      - id: set-vars
-        run: |
-          echo "::set-output name=service::${{ env.SERVICE }}"
+    uses: ./.github/workflows/main.yaml
 
   deploy-function:
     runs-on: ubuntu-latest
@@ -42,9 +29,9 @@ jobs:
       - run: |
           echo "INSIDER_API_KEY: ${{ secrets.INSIDER_API_KEY }}" >> ${{ env.ENV_FILE }}
 
-          echo "TEMPLATE: ${{ needs.set-env.outputs.service }}" >> ${{ env.ENV_FILE }}
+          echo "TEMPLATE: ${{ needs.set-env.outputs.template }}" >> ${{ env.ENV_FILE }}
 
-          echo "PUBLIC_URL: https://us-central1-${{ env.PROJECT_ID }}.cloudfunctions.net/${{ needs.set-env.outputs.service }}" >> ${{ env.ENV_FILE }}
+          echo "PUBLIC_URL: https://us-central1-${{ env.PROJECT_ID }}.cloudfunctions.net/${{ needs.set-env.outputs.fn }}" >> ${{ env.ENV_FILE }}
 
       - uses: actions/setup-node@v2
         with:
@@ -66,7 +53,7 @@ jobs:
       - uses: "google-github-actions/setup-gcloud@v0"
 
       - run: >-
-          gcloud functions deploy ${{ needs.set-env.outputs.service }}
+          gcloud functions deploy ${{ needs.set-env.outputs.fn }}
           --entry-point=main
           --source=dist
           --region=us-central1
