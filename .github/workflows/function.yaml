@@ -77,4 +77,5 @@ jobs:
           --no-user-output-enabled
           --service-account=${{ env.GCP_SA }}
           --env-vars-file=${{ env.ENV_FILE }}
+          --allow-unauthenticated
   
