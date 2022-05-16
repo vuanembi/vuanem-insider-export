@@ -9,7 +9,7 @@ on:
       - dataflow/**
   workflow_dispatch:
 
-concurrency: ${{ github.ref }}
+concurrency: ${{ github.ref }}-${{ github.workflow }}
 
 env:
   PROJECT_ID: voltaic-country-280607
@@ -33,9 +33,9 @@ jobs:
 
           echo "PUBLIC_URL: https://us-central1-${{ env.PROJECT_ID }}.cloudfunctions.net/${{ needs.set-env.outputs.fn }}" >> ${{ env.ENV_FILE }}
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version-file: '.nvmrc'
           cache: "npm"
 
       - run: npm install

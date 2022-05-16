@@ -7,10 +7,10 @@ on:
       - dev
     paths:
       - dataflow/**
-      - .github/workflows/dataflow.yaml
+      - .github/**
   workflow_dispatch:
 
-concurrency: ${{ github.ref }}
+concurrency: ${{ github.ref }}-${{ github.workflow }}
 
 jobs:
   set-env:
@@ -29,8 +29,7 @@ jobs:
 
       - uses: "google-github-actions/setup-gcloud@v0"
 
-      - name: Build & Push Image
-        run: |-
+      - run: |-
           gcloud auth configure-docker
           docker build -t ${{ needs.set-env.outputs.image }} dataflow/
           docker push ${{ needs.set-env.outputs.image }}
