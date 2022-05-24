@@ -264,7 +264,7 @@ const buildConfig = (start: Dayjs, end: Dayjs) => ({
             },
         ],
     },
-    format: 'csv',
+    format: 'parquet',
     hook: callbackHook,
 });
 

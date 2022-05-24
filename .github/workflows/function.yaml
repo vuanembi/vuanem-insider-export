@@ -46,11 +46,11 @@ jobs:
           cp package.json dist/package.json
           cp package-lock.json dist/package-lock.json
 
-      - uses: "google-github-actions/auth@v0"
+      - uses: google-github-actions/auth@v0
         with:
-          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - uses: "google-github-actions/setup-gcloud@v0"
+      - uses: google-github-actions/setup-gcloud@v0
 
       - run: >-
           gcloud functions deploy ${{ needs.set-env.outputs.fn }}
