@@ -15,7 +15,7 @@ BUCKET = "vuanem-insider"
 
 DATASET = "IP_Insider"
 
-TABLE = "p_UserDataExport5"
+TABLE = "p_UserDataExport"
 
 TIMESTAMP_FIELDS = [
     "a_last_purchase_date",
