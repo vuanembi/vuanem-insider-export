@@ -3,13 +3,14 @@ import { FlexTemplatesServiceClient } from '@google-cloud/dataflow';
 
 const client = new FlexTemplatesServiceClient();
 
+const location = 'us-central1';
+
 export const launchJob = async (
     containerSpecGcsPath: string,
     parameters: Record<string, any>,
     jobName: string,
 ) => {
     const projectId = await client.getProjectId();
-    const location = 'us-central1';
 
     return client
         .launchFlexTemplate({
